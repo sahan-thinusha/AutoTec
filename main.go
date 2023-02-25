@@ -4,6 +4,7 @@ import (
 	"autotec/pkg/env"
 	"autotec/pkg/rest_controller"
 	"context"
+	echo "github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"

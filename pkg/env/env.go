@@ -11,3 +11,5 @@ var REST_Port string
 const MongoURI = "MongoURI"
 
 var Mongo_URI string
+
+var SigningPrivateKey string
