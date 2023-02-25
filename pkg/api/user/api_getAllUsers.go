@@ -1,7 +1,7 @@
 package user
 
 import (
-	"autotec/pkg/controller"
+	controller "autotec/pkg/controller/user"
 	echo "github.com/labstack/echo/v4"
 	"net/http"
 	"strconv"
@@ -18,7 +18,7 @@ func GetAllUsers(c echo.Context) error {
 		limit = -1
 	}
 
-	data, err := controller.GetAllAirBNB(index, limit)
+	data, err := controller.GetAllUsers(index, limit)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
