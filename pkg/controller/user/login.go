@@ -4,6 +4,7 @@ import (
 	"autotec/pkg/dto"
 	"autotec/pkg/entity"
 	"autotec/pkg/env"
+	"autotec/pkg/util"
 	"context"
 	"errors"
 	"fmt"
@@ -20,6 +21,11 @@ Fetch user data
 func Login(user *dto.UserDto) (*dto.TokenDto, error) {
 	fetchedUser := entity.User{}
 	db := env.MongoDBConnection
+	var e error
+	user.Password, e = util.Decrypt(user.Password)
+	if e != nil {
+		return nil, e
+	}
 	coll := db.Collection("Users").FindOne(context.Background(), bson.M{"userName": user.UserName, "password": user.Password})
 	err := coll.Decode(&fetchedUser)
 	if err != nil {

@@ -8,7 +8,6 @@ import (
 )
 
 func AddNewUser(c echo.Context) error {
-
 	user := entity.User{}
 	if error := c.Bind(&user); error != nil {
 		return c.JSON(http.StatusBadRequest, error.Error())
