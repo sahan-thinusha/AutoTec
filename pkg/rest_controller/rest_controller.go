@@ -1,6 +1,7 @@
 package rest_controller
 
 import (
+	pre_repair_estimate "autotec/pkg/api/pre_repair_estimate"
 	user "autotec/pkg/api/user"
 	vehicle "autotec/pkg/api/vehicle"
 
@@ -30,6 +31,10 @@ func NormalRoutes(g *echo.Group) {
 	g.POST("/v1/api/vehicle", vehicle.AddNewVehicle)
 	g.PUT("/v1/api/vehicle", vehicle.UpdateVehicle)
 	g.GET("/v1/api/vehicle", vehicle.GetVehiclesBtCustomer)
+
+	g.POST("/v1/api/pre_repair_estimate", pre_repair_estimate.AddNewPreRepairEstimate)
+	g.PUT("/v1/api/pre_repair_estimate", pre_repair_estimate.UpdatePreRepairEstimate)
+	g.GET("/v1/api/pre_repair_estimates", pre_repair_estimate.GetAllPreRepairEstimates)
 }
 
 func SwaggerAPIDoc(g *echo.Group) {

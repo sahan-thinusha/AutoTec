@@ -44,10 +44,11 @@ func mongoConnect() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	env.MongoDBConnection = client.Database("sample_airbnb")
+	env.MongoDBConnection = client.Database("Auto_Tec")
 }
 
 func main() {
+
 	mongoConnect()
 	e := echo.New()
 	rest_controller.EchoController(e)
