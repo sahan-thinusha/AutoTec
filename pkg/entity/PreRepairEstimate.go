@@ -8,4 +8,5 @@ type PreRepairEstimate struct {
 	Description string  `json:"description" bson:"description"`
 	Quantity    float64 `json:"quantity" bson:"quantity"`
 	Price       float64 `json:"price" bson:"price"`
+	CustomerId  string  `json:"customerId" bson:"customerId"`
 }

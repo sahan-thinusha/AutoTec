@@ -1,6 +1,7 @@
 package rest_controller
 
 import (
+	job "autotec/pkg/api/job"
 	pre_repair_estimate "autotec/pkg/api/pre_repair_estimate"
 	user "autotec/pkg/api/user"
 	vehicle "autotec/pkg/api/vehicle"
@@ -35,6 +36,10 @@ func NormalRoutes(g *echo.Group) {
 	g.POST("/v1/api/pre_repair_estimate", pre_repair_estimate.AddNewPreRepairEstimate)
 	g.PUT("/v1/api/pre_repair_estimate", pre_repair_estimate.UpdatePreRepairEstimate)
 	g.GET("/v1/api/pre_repair_estimates", pre_repair_estimate.GetAllPreRepairEstimates)
+
+	g.POST("/v1/api/job", job.AddNewJob)
+	g.PUT("/v1/api/job", job.UpdateJob)
+	g.GET("/v1/api/job", job.GetAllJob)
 }
 
 func SwaggerAPIDoc(g *echo.Group) {
