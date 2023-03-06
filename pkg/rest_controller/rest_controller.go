@@ -1,10 +1,12 @@
 package rest_controller
 
 import (
-	job "autotec/pkg/api/job"
-	pre_repair_estimate "autotec/pkg/api/pre_repair_estimate"
-	user "autotec/pkg/api/user"
-	vehicle "autotec/pkg/api/vehicle"
+	"autotec/pkg/api/health_report"
+	"autotec/pkg/api/job"
+	"autotec/pkg/api/pre_repair_estimate"
+	"autotec/pkg/api/user"
+	"autotec/pkg/api/vehicle"
+	"autotec/pkg/api/work_progress"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -40,6 +42,14 @@ func NormalRoutes(g *echo.Group) {
 	g.POST("/v1/api/job", job.AddNewJob)
 	g.PUT("/v1/api/job", job.UpdateJob)
 	g.GET("/v1/api/job", job.GetAllJob)
+
+	g.POST("/v1/api/health_report", health_report.AddNewHealthReport)
+	g.PUT("/v1/api/health_report", health_report.UpdateHealthReport)
+	g.GET("/v1/api/health_report", health_report.GetAllHealthReport)
+
+	g.POST("/v1/api/work_progress", work_progress.AddNewWorkProgress)
+	g.PUT("/v1/api/work_progress", work_progress.UpdateWorkProgress)
+	g.GET("/v1/api/work_progress", work_progress.GetAllWorkProgress)
 }
 
 func SwaggerAPIDoc(g *echo.Group) {
