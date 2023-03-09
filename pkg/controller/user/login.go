@@ -10,57 +10,55 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
 	"strings"
 	"time"
 )
 
-/**
+/*
+*
 Fetch user data
 */
 func Login(user *dto.UserDto) (*dto.TokenDto, error) {
 	fetchedUser := entity.User{}
 	db := env.MongoDBConnection
-	var e error
-	user.Password, e = util.Decrypt(user.Password)
-	if e != nil {
-		return nil, e
-	}
-	coll := db.Collection("Users").FindOne(context.Background(), bson.M{"userName": user.UserName, "password": user.Password})
+	coll := db.Collection("Users").FindOne(context.Background(), bson.M{"userName": user.UserName})
 	err := coll.Decode(&fetchedUser)
 	if err != nil {
 		return nil, err
 	}
 
 	if !strings.EqualFold(fetchedUser.UserName, "") {
-		data, err := createToken(fetchedUser.Roles, fetchedUser.Id)
-		if err != nil {
-			return nil, err
+		pw, e := util.Decrypt(fetchedUser.Password)
+		if e != nil {
+			return nil, e
 		}
-		return data, nil
+		if strings.EqualFold(pw, user.Password) {
+			data, err := createToken(fetchedUser.Roles, fetchedUser.Id)
+			if err != nil {
+				return nil, err
+			}
+			return data, nil
+		} else {
+			return nil, errors.New("invalid user name or password")
+		}
 	} else {
 		return nil, errors.New("invalid user name or password")
 	}
 }
 
-/**
+/*
+*
 Jwt Token creation Function
 */
 func createToken(roles []string, uid string) (*dto.TokenDto, error) {
 
-	key, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(env.SigningPrivateKey))
-	if err != nil {
-		log.Println(err)
-	}
-
-	token := jwt.New(jwt.SigningMethodRS256)
-
+	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
 	var rolesArr []string
 
 	for _, role := range roles {
-		rolesArr = append(roles, role)
+		rolesArr = append(rolesArr, role)
 	}
 
 	userId := ""
@@ -73,7 +71,7 @@ func createToken(roles []string, uid string) (*dto.TokenDto, error) {
 	exp := time.Now().Add(time.Hour * 24).Unix()
 	claims["exp"] = exp
 
-	tokenString, err := token.SignedString(key)
+	tokenString, err := token.SignedString([]byte(env.SigningKey))
 
 	if err != nil {
 		fmt.Errorf("something Went Wrong: %s", err.Error())

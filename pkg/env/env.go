@@ -12,6 +12,6 @@ const MongoURI = "MongoURI"
 
 var Mongo_URI string
 
-var SigningPrivateKey string
+var SigningKey string
 
 var Encrypt_Key string

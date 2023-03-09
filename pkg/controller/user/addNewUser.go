@@ -1,6 +1,7 @@
 package user
 
 import (
+	"autotec/pkg/dto"
 	"autotec/pkg/entity"
 	"autotec/pkg/env"
 	"autotec/pkg/util"
@@ -9,7 +10,7 @@ import (
 	"time"
 )
 
-func AddNewUser(user *entity.User) (*entity.User, error) {
+func AddNewUser(user *entity.User) (*dto.APIResponse, error) {
 	id := xid.New()
 	currentTime := time.Now()
 	user.CreatedAt = &currentTime
@@ -25,5 +26,8 @@ func AddNewUser(user *entity.User) (*entity.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+
+	response := dto.APIResponse{}
+	response.Id = user.Id
+	return &response, nil
 }

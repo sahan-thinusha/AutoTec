@@ -26,6 +26,9 @@ func init() {
 	} else {
 		env.Mongo_URI = "mongodb+srv://root:sahan12345@clustertest.qegu11v.mongodb.net/?retryWrites=true&w=majority"
 	}
+
+	env.Encrypt_Key = "92AE31A79FEEB2A3"
+	env.SigningKey = "JhbGciOiJub25lIiwidHlwIjoiS"
 }
 
 func mongoConnect() {

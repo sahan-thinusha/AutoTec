@@ -11,6 +11,7 @@ import (
 
 func Decrypt(cipherText string) (plainText string, err error) {
 	// prepare cipher
+
 	keyByte := []byte(env.Encrypt_Key)
 	block, err := aes.NewCipher(keyByte)
 	if err != nil {
