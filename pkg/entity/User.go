@@ -9,4 +9,6 @@ type User struct {
 	ContactNo string   `json:"contactNo" bson:"contactNo"`
 	Roles     []string `json:"roles" bson:"roles"`
 	Password  string   `json:"password" bson:"password"`
+	Address   string   `json:"address" bson:"address"`
+	City      string   `json:"city" bson:"city"`
 }
