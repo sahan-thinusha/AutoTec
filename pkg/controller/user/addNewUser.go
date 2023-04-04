@@ -6,16 +6,15 @@ import (
 	"autotec/pkg/env"
 	"autotec/pkg/util"
 	"context"
-	"github.com/rs/xid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
 func AddNewUser(user *entity.User) (*dto.APIResponse, error) {
-	id := xid.New()
 	currentTime := time.Now()
 	user.CreatedAt = &currentTime
 	user.UpdatedAt = &currentTime
-	user.Id = id.String()
+	user.Id = primitive.NewObjectID().Hex()
 	var e error
 	user.Password, e = util.Encrypt(user.Password)
 	if e != nil {

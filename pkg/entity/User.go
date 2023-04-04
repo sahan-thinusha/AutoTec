@@ -7,7 +7,7 @@ type User struct {
 	LastName  string   `json:"lastName" bson:"lastName"`
 	UserName  string   `json:"userName" bson:"userName"`
 	ContactNo string   `json:"contactNo" bson:"contactNo"`
-	Roles     []string `json:"roles" bson:"roles"`
+	Role     string `json:"role" bson:"role"`
 	Password  string   `json:"password" bson:"password"`
 	Address   string   `json:"address" bson:"address"`
 	City      string   `json:"city" bson:"city"`

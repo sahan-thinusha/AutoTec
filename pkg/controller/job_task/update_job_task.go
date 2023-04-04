@@ -1,24 +1,23 @@
-package job
+package job_task
 
 import (
 	"autotec/pkg/entity"
 	"autotec/pkg/env"
 	"context"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson"
 	"time"
 )
 
-func AddrNewJob(job *entity.Job) (*entity.Job, error) {
+func UpdateJobTask(job *entity.JobTask) (*entity.JobTask, error) {
 	currentTime := time.Now()
 	job.CreatedAt = &currentTime
 	job.UpdatedAt = &currentTime
-	job.Id = primitive.NewObjectID().Hex()
 	var e error
 	if e != nil {
 		return nil, e
 	}
 	db := env.MongoDBConnection
-	_, err := db.Collection("Job").InsertOne(context.Background(), job)
+	_, err := db.Collection("JobTask").UpdateOne(context.Background(), bson.M{"_id": job.Id}, job)
 	if err != nil {
 		return nil, err
 	}

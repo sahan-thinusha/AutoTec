@@ -1,4 +1,4 @@
-package job
+package job_task
 
 import (
 	"autotec/pkg/entity"
@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func AddrNewJob(job *entity.Job) (*entity.Job, error) {
+func AddNewJobTask(job *entity.JobTask) (*entity.JobTask, error) {
 	currentTime := time.Now()
 	job.CreatedAt = &currentTime
 	job.UpdatedAt = &currentTime
@@ -18,7 +18,7 @@ func AddrNewJob(job *entity.Job) (*entity.Job, error) {
 		return nil, e
 	}
 	db := env.MongoDBConnection
-	_, err := db.Collection("Job").InsertOne(context.Background(), job)
+	_, err := db.Collection("JobTask").InsertOne(context.Background(), job)
 	if err != nil {
 		return nil, err
 	}

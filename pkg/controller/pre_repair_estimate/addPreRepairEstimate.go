@@ -4,16 +4,15 @@ import (
 	"autotec/pkg/entity"
 	"autotec/pkg/env"
 	"context"
-	"github.com/rs/xid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
 func AddrNewPreRepairEstimate(preRepairEstimate *entity.PreRepairEstimate) (*entity.PreRepairEstimate, error) {
-	id := xid.New()
 	currentTime := time.Now()
 	preRepairEstimate.CreatedAt = &currentTime
 	preRepairEstimate.UpdatedAt = &currentTime
-	preRepairEstimate.Id = id.String()
+	preRepairEstimate.Id = primitive.NewObjectID().Hex()
 	var e error
 	if e != nil {
 		return nil, e
