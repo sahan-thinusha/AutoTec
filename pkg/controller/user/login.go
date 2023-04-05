@@ -33,7 +33,7 @@ func Login(user *dto.UserDto) (*dto.TokenDto, error) {
 			return nil, e
 		}
 		if strings.EqualFold(pw, user.Password) {
-			data, err := createToken(fetchedUser.Roles, fetchedUser.Id)
+			data, err := createToken(fetchedUser.Role, fetchedUser.Id)
 			if err != nil {
 				return nil, err
 			}
@@ -50,23 +50,17 @@ func Login(user *dto.UserDto) (*dto.TokenDto, error) {
 *
 Jwt Token creation Function
 */
-func createToken(roles []string, uid string) (*dto.TokenDto, error) {
+func createToken(role string, uid string) (*dto.TokenDto, error) {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-
-	var rolesArr []string
-
-	for _, role := range roles {
-		rolesArr = append(rolesArr, role)
-	}
 
 	userId := ""
 	if !strings.EqualFold(uid, "") {
 		userId = uid
 	}
 
-	claims["roles"] = rolesArr
+	claims["role"] = role
 	claims["uid"] = userId
 	exp := time.Now().Add(time.Hour * 24).Unix()
 	claims["exp"] = exp
