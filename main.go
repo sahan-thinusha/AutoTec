@@ -2,8 +2,10 @@ package main
 
 import (
 	"autotec/pkg/env"
+	"autotec/pkg/pdf"
 	"autotec/pkg/rest_controller"
 	"context"
+	"fmt"
 	echo "github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,7 +20,7 @@ func init() {
 	if val, exist := os.LookupEnv(env.RESTPort); exist && !strings.EqualFold(val, "") {
 		env.REST_Port = val
 	} else {
-		env.REST_Port = "8080"
+		env.REST_Port = "8081"
 	}
 
 	if val, exist := os.LookupEnv(env.MongoURI); exist && !strings.EqualFold(val, "") {
@@ -51,9 +53,12 @@ func mongoConnect() {
 }
 
 func main() {
-
+	fmt.Println("xx")
 	mongoConnect()
+	pdf.GeneratePreRepairEstimatePDF()
+	fmt.Println("Ss")
 	e := echo.New()
 	rest_controller.EchoController(e)
 	e.Logger.Fatal(e.Start(":" + env.REST_Port))
+
 }

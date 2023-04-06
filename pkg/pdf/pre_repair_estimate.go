@@ -35,12 +35,16 @@ func GeneratePreRepairEstimatePDF() {
 	})
 
 	pdf.AddPage()
+	pdf.SetY(50)
+	pdf.Text("Customer ID :" + "cst")
+	pdf.SetX(250)
+	pdf.Text("Customer Name :" + "Sahan")
+	pdf.SetX(0)
 	pdf.SetY(400)
 	pdf.Text("page 1 content")
 	pdf.AddPage()
 	pdf.SetY(400)
 	pdf.Text("page 2 content")
-
 	err = pdf.WritePdf("header-footer.tmp.pdf")
 	if err != nil {
 		fmt.Println(err)
