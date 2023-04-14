@@ -9,6 +9,7 @@ type WorkProgress struct {
 	Time       int64  `json:"time" bson:"time"`
 	CustomerId string `json:"customerId" bson:"customerId"`
 	Tasks      []Task `json:"tasks" bson:"tasks"`
+	Customer   string `json:"customer" bson:"customer"`
 }
 
 type Task struct {
