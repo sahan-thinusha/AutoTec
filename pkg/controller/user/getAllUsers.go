@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetAllUsers(index, limit int) ([]*entity.User, error) {
+func GetAllUsers(index, limit int, role string) ([]*entity.User, error) {
 	var users []*entity.User
 	users = []*entity.User{}
 	ctx := context.Background()
@@ -19,7 +19,7 @@ func GetAllUsers(index, limit int) ([]*entity.User, error) {
 		opts := options.Find()
 		opts = opts.SetLimit(int64(limit))
 		opts = opts.SetSkip(int64(offset))
-		cursor, err := db.Collection("Users").Find(context.Background(), bson.M{}, opts)
+		cursor, err := db.Collection("Users").Find(ctx, bson.M{"role": role}, opts)
 		if err != nil {
 			return nil, err
 		}
@@ -30,7 +30,7 @@ func GetAllUsers(index, limit int) ([]*entity.User, error) {
 
 		return users, nil
 	} else {
-		cursor, err := db.Collection("Users").Find(context.Background(), bson.M{})
+		cursor, err := db.Collection("Users").Find(context.Background(), bson.M{"role": role})
 		if err != nil {
 			return nil, err
 		}

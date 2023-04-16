@@ -18,7 +18,9 @@ func GetAllUsers(c echo.Context) error {
 		limit = -1
 	}
 
-	data, err := controller.GetAllUsers(index, limit)
+	role, _ := strconv.Atoi(c.QueryParam("role"))
+
+	data, err := controller.GetAllUsers(index, limit, role)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

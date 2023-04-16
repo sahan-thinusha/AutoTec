@@ -68,8 +68,8 @@ func BasicSecuredRoutes(g *echo.Group) {
 }
 
 func SecuredRoutes(g *echo.Group) {
-	g.GET("/v1/api/user", user.GetAllUsers)
 	g.POST("/v1/api/user", user.AddNewUser)
+	g.GET("/v1/api/user", user.GetAllUsers)
 
 	g.POST("/v1/api/vehicle", vehicle.AddNewVehicle)
 	g.PUT("/v1/api/vehicle", vehicle.UpdateVehicle)
@@ -97,6 +97,7 @@ func SecuredRoutes(g *echo.Group) {
 }
 
 func NormalRoutes(g *echo.Group) {
+
 }
 
 func SwaggerAPIDoc(g *echo.Group) {

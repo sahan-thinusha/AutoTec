@@ -1,11 +1,15 @@
 package main
 
 import (
+	"autotec/pkg/entity"
 	"autotec/pkg/env"
-	"autotec/pkg/pdf"
 	"autotec/pkg/rest_controller"
+	"autotec/pkg/util"
 	"context"
+	"fmt"
 	echo "github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -53,9 +57,33 @@ func mongoConnect() {
 
 func main() {
 	mongoConnect()
-	pdf.GeneratePreRepairEstimatePDF()
+	CreateDefaultUser()
+	//pdf.GeneratePreRepairEstimatePDF()
 	e := echo.New()
 	rest_controller.EchoController(e)
 	e.Logger.Fatal(e.Start(":" + env.REST_Port))
 
+}
+
+func CreateDefaultUser() {
+	db := env.MongoDBConnection
+	ctx := context.Background()
+	cursor, err := db.Collection("Users").Find(ctx, bson.M{})
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer cursor.Close(ctx)
+	var targetUser *entity.User
+	if !cursor.Next(ctx) {
+		targetUser = &entity.User{}
+		targetUser.Id = primitive.NewObjectID().Hex()
+		currentTime := time.Now()
+		targetUser.CreatedAt = &currentTime
+		targetUser.UpdatedAt = &currentTime
+		targetUser.Role = "Admin"
+		targetUser.UserName = "admin"
+		targetUser.Password, _ = util.Encrypt("admin@123")
+		targetUser.FirstName = "Admin"
+		db.Collection("Users").InsertOne(ctx, targetUser)
+	}
 }
