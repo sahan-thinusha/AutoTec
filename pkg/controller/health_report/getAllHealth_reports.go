@@ -30,7 +30,7 @@ func GetAllHealthReports(index, limit int) ([]*entity.HealthReport, error) {
 
 		return healthReport, nil
 	} else {
-		cursor, err := db.Collection("Users").Find(context.Background(), bson.M{})
+		cursor, err := db.Collection("HealthReport").Find(context.Background(), bson.M{})
 		if err != nil {
 			return nil, err
 		}
