@@ -11,6 +11,7 @@ type HealthReport struct {
 	CustomerId       string             `json:"customerId" bson:"customerId"`
 	CustomerName     string             `json:"customerName" bson:"customerName"`
 	HealthReportItem []HealthReportItem `json:"healthReportItem" bson:"healthReportItem"`
+	Status           string             `json:"status" bson:"status"`
 }
 
 type HealthReportItem struct {
