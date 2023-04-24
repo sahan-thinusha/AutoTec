@@ -5,6 +5,7 @@ import (
 	"autotec/pkg/api/job"
 	"autotec/pkg/api/job_task"
 	"autotec/pkg/api/pre_repair_estimate"
+	"autotec/pkg/api/promotion"
 	"autotec/pkg/api/user"
 	"autotec/pkg/api/vehicle"
 	"autotec/pkg/api/work_progress"
@@ -97,6 +98,10 @@ func SecuredRoutes(g *echo.Group) {
 	g.PUT("/v1/api/job_task", job_task.UpdateJobTask)
 
 	g.GET("/v1/api/health_report/templates", health_report.GetAllHealthReportTemplate)
+
+	g.POST("/v1/api/promotion", promotion.AddNewPromotion)
+	g.GET("/v1/api/promotion", promotion.GetAllPromotions)
+	g.GET("/v1/api/promotion/customer", promotion.GetAllPromotionsByCustomer)
 
 }
 
