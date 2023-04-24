@@ -30,7 +30,7 @@ func GetAllPreRepairEstimates(index, limit int) ([]*entity.PreRepairEstimate, er
 
 		return preRepairEstimates, nil
 	} else {
-		cursor, err := db.Collection("Users").Find(context.Background(), bson.M{})
+		cursor, err := db.Collection("PreRepairEstimate").Find(context.Background(), bson.M{})
 		if err != nil {
 			return nil, err
 		}

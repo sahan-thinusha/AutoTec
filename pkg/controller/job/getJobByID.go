@@ -15,7 +15,7 @@ func GetJobByID(index, limit int, id string) ([]*entity.JobDetails, error) {
 	db := env.MongoDBConnection
 
 	matchStage := bson.D{{"$match", bson.D{{"Id", id}}}}
-	lookupStage := bson.D{{"$lookup", bson.M{"from": "JobTask", "localField": "ID", "foreignField": "JobID", "as": "jobTask"}}}
+	lookupStage := bson.D{{"$lookup", bson.M{"from": "JobTask", "localField": "_id", "foreignField": "JobID", "as": "jobTask"}}}
 
 	if index >= 0 && limit >= 0 {
 		skipStage := bson.D{{"$skip", index}}
