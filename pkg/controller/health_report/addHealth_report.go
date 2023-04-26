@@ -13,6 +13,7 @@ func AddrNewHealthReport(healthReport *entity.HealthReport) (*entity.HealthRepor
 	healthReport.CreatedAt = &currentTime
 	healthReport.UpdatedAt = &currentTime
 	healthReport.Id = primitive.NewObjectID().Hex()
+	healthReport.Date = currentTime
 	var e error
 	if e != nil {
 		return nil, e
