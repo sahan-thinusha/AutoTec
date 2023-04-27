@@ -43,7 +43,7 @@ func GetTechnicianEfficiency(index, limit int) ([]*entity.LabourEfficiency, erro
 					bson.D{{"$cond", bson.A{
 						bson.D{{"$eq", bson.A{"$hoursattended", 0}}},
 						0,
-						bson.D{{"$round", bson.A{bson.D{{"$multiply", bson.A{bson.D{{"$divide", bson.A{"$totalHoursWorked", "$hoursattended"}}}, 100}}}, 2}}}}}},
+						bson.D{{"$round", bson.A{bson.D{{"$multiply", bson.A{bson.D{{"$divide", bson.A{"$totalHoursWorked", "$c"}}}, 100}}}, 2}}}}}},
 					100,
 				}},
 			}},
