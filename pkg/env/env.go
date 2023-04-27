@@ -15,3 +15,5 @@ var Mongo_URI string
 var SigningKey string
 
 var Encrypt_Key string
+
+const CONFIRMED = "CONFIRMED"

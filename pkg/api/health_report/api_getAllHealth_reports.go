@@ -38,7 +38,9 @@ func GetAllCustomerHealthReport(c echo.Context) error {
 		limit = -1
 	}
 
-	data, err := controller.GetAllHealthReports(index, limit)
+	uid := c.QueryParam("uid")
+
+	data, err := controller.GetAllHealthReportsForCustomer(index, limit, uid)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
