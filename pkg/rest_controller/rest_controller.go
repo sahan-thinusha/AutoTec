@@ -88,7 +88,7 @@ func SecuredRoutes(g *echo.Group) {
 	g.POST("/v1/api/health_report", health_report.AddNewHealthReport)
 	g.PUT("/v1/api/health_report", health_report.UpdateHealthReport)
 	g.GET("/v1/api/health_report", health_report.GetAllHealthReport)
-	g.GET("/v1/api/health_report/customer", health_report.GetAllHealthReport)
+	g.GET("/v1/api/health_report/customer", health_report.GetAllCustomerHealthReport)
 
 	g.POST("/v1/api/work_progress", work_progress.AddNewWorkProgress)
 	g.PUT("/v1/api/work_progress", work_progress.UpdateWorkProgress)
