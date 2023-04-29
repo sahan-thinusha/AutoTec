@@ -11,6 +11,7 @@ import (
 func AddrNewPreRepairEstimate(preRepairEstimate *entity.PreRepairEstimate) (*entity.PreRepairEstimate, error) {
 	currentTime := time.Now()
 	preRepairEstimate.CreatedAt = &currentTime
+	preRepairEstimate.Date = currentTime
 	preRepairEstimate.UpdatedAt = &currentTime
 	preRepairEstimate.Id = primitive.NewObjectID().Hex()
 	var e error
