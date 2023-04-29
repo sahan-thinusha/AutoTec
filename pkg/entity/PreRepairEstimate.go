@@ -12,6 +12,7 @@ type PreRepairEstimate struct {
 	CustomerId               string                     `json:"customerId" bson:"customerId"`
 	CustomerName             string                     `json:"customerName" bson:"customerName"`
 	Status                   string                     `json:"status" bson:"status"`
+	LabourRate               float64                    `json:"labourRate" bson:"labourRate"`
 }
 
 type PreRepairEstimateDetails struct {
