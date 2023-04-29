@@ -8,7 +8,7 @@ import (
 )
 
 func UpdatePreRepairEstimate(c echo.Context) error {
-	preRepairEstimate := entity.PreRepairEstimate{}
+	preRepairEstimate := entity.PreRepairEstimateUpdate{}
 	if error := c.Bind(&preRepairEstimate); error != nil {
 		return c.JSON(http.StatusBadRequest, error.Error())
 	}

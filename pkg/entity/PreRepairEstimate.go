@@ -21,3 +21,15 @@ type PreRepairEstimateDetails struct {
 	Price    float64 `json:"price" bson:"price"`
 	Note     string  `json:"note" bson:"note"`
 }
+
+type PreRepairEstimateUpdate struct {
+	Id                       string `json:"id" bson:"_id"`
+	Base                     `bson:",inline"`
+	VehicleId                string                     `json:"vehicleId" bson:"vehicleId"`
+	VehicleName              string                     `json:"vehicleName" bson:"vehicleName"`
+	PreRepairEstimateDetails []PreRepairEstimateDetails `json:"preRepairEstimateDetails" bson:"preRepairEstimateDetails"`
+	CustomerId               string                     `json:"customerId" bson:"customerId"`
+	CustomerName             string                     `json:"customerName" bson:"customerName"`
+	Status                   string                     `json:"status" bson:"status"`
+	LabourRate               float64                    `json:"labourRate" bson:"labourRate"`
+}

@@ -19,7 +19,7 @@ func GetAllPreRepairEstimateForCustomer(index, limit int, uid string) ([]*entity
 		opts := options.Find()
 		opts = opts.SetLimit(int64(limit))
 		opts = opts.SetSkip(int64(offset))
-		cursor, err := db.Collection("PreRepairEstimate").Find(context.Background(), bson.M{"customerId": uid, "status": env.CONFIRMED}, opts)
+		cursor, err := db.Collection("PreRepairEstimate").Find(context.Background(), bson.M{"customerId": uid, "status": bson.M{"$in": []string{env.CONFIRMED, env.REJECTED, env.APPROVED}}}, opts)
 		if err != nil {
 			return nil, err
 		}
@@ -30,7 +30,7 @@ func GetAllPreRepairEstimateForCustomer(index, limit int, uid string) ([]*entity
 
 		return preRepairEstimate, nil
 	} else {
-		cursor, err := db.Collection("PreRepairEstimate").Find(context.Background(), bson.M{"customerId": uid, "status": env.CONFIRMED})
+		cursor, err := db.Collection("PreRepairEstimate").Find(context.Background(), bson.M{"customerId": uid, "status": bson.M{"$in": []string{env.CONFIRMED, env.REJECTED, env.APPROVED}}})
 		if err != nil {
 			return nil, err
 		}

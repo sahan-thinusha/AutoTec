@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-func UpdatePreRepairEstimate(preRepairEstimate *entity.PreRepairEstimate) (*entity.PreRepairEstimate, error) {
+func UpdatePreRepairEstimate(preRepairEstimate *entity.PreRepairEstimateUpdate) (*entity.PreRepairEstimateUpdate, error) {
 	currentTime := time.Now()
 	preRepairEstimate.CreatedAt = &currentTime
 	preRepairEstimate.UpdatedAt = &currentTime
 	db := env.MongoDBConnection
-	_, err := db.Collection("PreRepairEstimate").UpdateOne(context.Background(), bson.M{"_id": preRepairEstimate.Id}, preRepairEstimate)
+	_, err := db.Collection("PreRepairEstimate").UpdateOne(context.Background(), bson.M{"_id": preRepairEstimate.Id}, bson.M{"$set": preRepairEstimate})
 	if err != nil {
 		return nil, err
 	}
