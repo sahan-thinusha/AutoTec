@@ -19,3 +19,4 @@ var Encrypt_Key string
 const CONFIRMED = "CONFIRMED"
 const APPROVED = "APPROVED"
 const REJECTED = "REJECTED"
+const BaseURL = "http://localhost:8082/"
