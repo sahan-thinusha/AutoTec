@@ -12,6 +12,8 @@ type Job struct {
 	Status       string    `json:"status" bson:"status"`
 	JobTask      []JobTask `json:"jobTask" bson:"-"`
 	Date         time.Time `json:"date" bson:"date"`
+	VehicleId    string    `json:"vehicleId" bson:"vehicleId"`
+	VehicleName  string    `json:"vehicleName" bson:"vehicleName"`
 }
 
 type JobDetails struct {
