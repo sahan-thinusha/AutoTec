@@ -1,15 +1,17 @@
 package entity
 
+import "time"
+
 type Job struct {
 	Id           string `json:"id" bson:"_id"`
 	Base         `bson:",inline"`
-	Subject      string  `json:"subject" bson:"subject"`
-	Description  string  `json:"description" bson:"description"`
-	LabourTime   int64   `json:"labour_time" bson:"labour_time"`
-	CustomerId   string  `json:"customerId" bson:"customerId"`
-	CustomerName string  `json:"customerName" bson:"customerName"`
-	Status       string  `json:"status" bson:"status"`
-	LabourRate   float64 `json:"labourRate" bson:"labourRate"`
+	Subject      string    `json:"subject" bson:"subject"`
+	Description  string    `json:"description" bson:"description"`
+	CustomerId   string    `json:"customerId" bson:"customerId"`
+	CustomerName string    `json:"customerName" bson:"customerName"`
+	Status       string    `json:"status" bson:"status"`
+	JobTask      []JobTask `json:"jobTask" bson:"-"`
+	Date         time.Time `json:"date" bson:"date"`
 }
 
 type JobDetails struct {
@@ -17,7 +19,6 @@ type JobDetails struct {
 	Base         `bson:",inline"`
 	Subject      string     `json:"subject" bson:"subject"`
 	Description  string     `json:"description" bson:"description"`
-	LabourTime   int64      `json:"labour_time" bson:"labour_time"`
 	CustomerId   string     `json:"customerId" bson:"customerId"`
 	CustomerName string     `json:"customerName" bson:"customerName"`
 	Status       string     `json:"status" bson:"status"`
@@ -25,5 +26,4 @@ type JobDetails struct {
 	Customer     string     `json:"customer" bson:"customer"`
 	VehicleID    string     `json:"vehicleID" bson:"vehicleID"`
 	Vehicle      string     `json:"vehicle" bson:"vehicle"`
-	LabourRate   float64    `json:"labourRate" bson:"labourRate"`
 }

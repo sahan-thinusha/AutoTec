@@ -10,12 +10,14 @@ type JobTask struct {
 	Description   string    `json:"description" bson:"description"`
 	StartedAt     time.Time `json:"startedAt" bson:"startedAt"`
 	EndedAt       time.Time `json:"endedAt" bson:"endedAt"`
-	LabourTime    int64     `json:"labour_time" bson:"labour_time"`
-	EstimatedTime int64     `json:"estimatedTime" bson:"estimatedTime"`
+	LabourTime    float64   `json:"labour_time" bson:"labour_time"`
+	EstimatedTime float64   `json:"estimatedTime" bson:"estimatedTime"`
 	CustomerId    string    `json:"customerId" bson:"customerId"`
 	CustomerName  string    `json:"customerName" bson:"customerName"`
 	LabourID      string    `json:"labourID" bson:"labourID"`
 	LabourName    string    `json:"labourName" bson:"labourName"`
+	VehicleId     string    `json:"vehicleId" bson:"vehicleId"`
+	VehicleName   string    `json:"vehicleName" bson:"vehicleName"`
 	Status        string    `json:"status" bson:"status"`
-	LabourRate    string    `json:"labourRate" bson:"labourRate"`
+	LabourRate    float64   `json:"labourRate" bson:"labourRate"`
 }
