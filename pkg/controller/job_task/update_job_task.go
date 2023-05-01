@@ -17,7 +17,7 @@ func UpdateJobTask(job *entity.JobTask) (*entity.JobTask, error) {
 		return nil, e
 	}
 	db := env.MongoDBConnection
-	_, err := db.Collection("JobTask").UpdateOne(context.Background(), bson.M{"_id": job.Id}, job)
+	_, err := db.Collection("JobTask").UpdateOne(context.Background(), bson.M{"_id": job.Id}, bson.M{"$set": job})
 	if err != nil {
 		return nil, err
 	}
