@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func UpdateJobTask(job *entity.JobTask) (*entity.JobTask, error) {
+func UpdateJobTask(job *entity.JobTaskUpdate) (*entity.JobTaskUpdate, error) {
 	currentTime := time.Now()
 	job.CreatedAt = &currentTime
 	job.UpdatedAt = &currentTime

@@ -8,7 +8,7 @@ import (
 )
 
 func UpdateJobTask(c echo.Context) error {
-	job := entity.JobTask{}
+	job := entity.JobTaskUpdate{}
 	if error := c.Bind(&job); error != nil {
 		return c.JSON(http.StatusBadRequest, error.Error())
 	}
