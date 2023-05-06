@@ -14,7 +14,7 @@ RUN go build -o app .
 
 
 
-EXPOSE $PORT
+EXPOSE 8081
 
 # Run the binary program produced by `go install`
 CMD ["./app"]
