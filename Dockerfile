@@ -7,7 +7,6 @@ WORKDIR /
 COPY . .
 RUN apk add alpine-sdk
 
-RUN go mod tidy
 # Build the Go app
 
 RUN go build -o app .
