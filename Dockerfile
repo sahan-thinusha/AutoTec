@@ -12,8 +12,6 @@ RUN go mod tidy
 
 RUN go build -o app .
 
-
-
 EXPOSE 8081
 
 # Run the binary program produced by `go install`
