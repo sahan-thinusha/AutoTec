@@ -19,4 +19,4 @@ var Encrypt_Key string
 const CONFIRMED = "CONFIRMED"
 const APPROVED = "APPROVED"
 const REJECTED = "REJECTED"
-const BaseURL = "http://127.0.0.1:8082/"
+const BaseURL = "http://165.22.214.115:8082/"
