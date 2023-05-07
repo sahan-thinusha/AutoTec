@@ -4,75 +4,110 @@ import (
 	"autotec/pkg/entity"
 	"autotec/pkg/env"
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"strconv"
+	"time"
 )
 
-func GetTechnicianEfficiency(index, limit int) ([]*entity.LabourEfficiency, error) {
-	var job []*entity.LabourEfficiency
-	job = []*entity.LabourEfficiency{}
+func GetTechnicianEfficiency() ([]*entity.LabourEfficiency, error) {
+	var labourEfficiency []*entity.LabourEfficiency
+	labourEfficiency = []*entity.LabourEfficiency{}
 	ctx := context.Background()
 	db := env.MongoDBConnection
 
-	matchStage := bson.D{{"$match", bson.D{{"role", "TECHNICIAN"}}}}
-	lookupStage := bson.D{{"$lookup", bson.M{"from": "JobTask", "localField": "_id", "foreignField": "labourID", "as": "jobTask"}}}
-	unwindStage1 := bson.D{{"$unwind", bson.M{"path": "$jobTask", "preserveNullAndEmptyArrays": true}}}
-	setStage := bson.D{{
-		"$set", bson.M{
-			"HoursSold": bson.M{
-				"$multiply": []string{"$jobTask.labourRate", "$jobTask.labour_time"},
+	now := time.Now()
+	_, month, _ := now.Date()
+	startOfMonth := time.Date(now.Year(), month, 1, 0, 0, 0, 0, time.Local)
+	hoursInMonth := now.Sub(startOfMonth).Hours()
+	totalShiftHours := hoursInMonth / 2
+	endOfMonth := time.Date(now.Year(), now.Month()+1, 0, 0, 0, 0, 0, time.UTC)
+
+	matchStageEmp := bson.D{{"$match", bson.D{{"role", "TECHNICIAN"}}}}
+	pipeLine1 := mongo.Pipeline{matchStageEmp}
+
+	cursor1, err := db.Collection("Users").Aggregate(context.Background(), pipeLine1)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor1.Close(ctx)
+
+	for cursor1.Next(ctx) {
+		user := entity.User{}
+		cursor1.Decode(&user)
+
+		matchStage := bson.D{{"$match", bson.D{{"status", env.Finished}}}}
+
+		matchStageDate := bson.D{{"$match", bson.D{
+			{"date", bson.M{
+				"$gte": startOfMonth,
+				"$lte": endOfMonth,
+			},
 			},
 		},
-	}}
-	groupStage := bson.D{{"$group", bson.D{
-		{"_id", "$_id"},
-		{"totalHoursEstimated", bson.M{"$sum": "$jobTask.estimatedTime"}},
-		{"totalHoursWorked", bson.M{"$sum": "$jobTask.labour_time"}},
-		{"totalHoursSold", bson.M{"$sum": "$hoursSold"}},
-		{"firstName", bson.D{{"$first", "$firstName"}}},
-		{"lastName", bson.D{{"$first", "$lastName"}}},
-	}}}
+		}}
 
-	projectStage := bson.D{{
-		"$project", bson.D{
-			{"employeeId", "$_id"},
-			{"firstName", "$firstName"},
-			{"lastName", "$lastName"},
-			{"laborUtilization", bson.D{
-				{"$multiply", bson.A{
-					bson.D{{"$cond", bson.A{
-						bson.D{{"$eq", bson.A{"$hoursattended", 0}}},
-						0,
-						bson.D{{"$round", bson.A{bson.D{{"$multiply", bson.A{bson.D{{"$divide", bson.A{"$totalHoursWorked", "$c"}}}, 100}}}, 2}}}}}},
-					100,
-				}},
-			}},
+		inlinePipeJobTask := bson.A{
+			bson.M{
+				"$match": bson.D{{"$expr", bson.D{{"$and", bson.A{
+					bson.M{"$eq": bson.A{"$jobID", "$$jobId"}}, bson.M{"$eq": bson.A{"$$labourID", "$labourID"}},
+				}}}}},
+			},
+		}
+		lookupStage := bson.D{{"$lookup", bson.M{"$lookup": bson.M{
+			"from":     "JobTask",
+			"let":      bson.M{"jobId": "$_id", "labourID": user.Id},
+			"pipeline": inlinePipeJobTask,
+			"as":       "jobTask",
+		}}}}
+		unwindStage1 := bson.D{{"$unwind", bson.M{"path": "$jobTask", "preserveNullAndEmptyArrays": true}}}
+		setStage := bson.D{{
+			"$set", bson.M{
+				"hoursSold": bson.M{
+					"$multiply": []string{"$jobTask.labourRate", "$jobTask.labour_time"},
+				},
+			},
+		}}
+		groupStage := bson.D{{"$group", bson.D{
+			{"_id", "$jobTask.labourID"},
+			{"totalHoursEstimated", bson.M{"$sum": "$jobTask.estimatedTime"}},
+			{"totalHoursWorked", bson.M{"$sum": "$jobTask.labour_time"}},
+			{"totalHoursSold", bson.M{"$sum": "$hoursSold"}},
 		}}}
-	if index >= 0 && limit >= 0 {
-		skipStage := bson.D{{"$skip", index}}
-		limitStage := bson.D{{"$limit", limit}}
-		pipeLine := mongo.Pipeline{matchStage, lookupStage, skipStage, limitStage, unwindStage1, setStage, groupStage, projectStage}
+
+		pipeLine := mongo.Pipeline{matchStage, matchStageDate, lookupStage, unwindStage1, setStage, groupStage}
 		cursor, err := db.Collection("Job").Aggregate(context.Background(), pipeLine)
 		if err != nil {
 			return nil, err
 		}
 		defer cursor.Close(ctx)
-		if err = cursor.All(context.Background(), &job); err != nil {
-			return nil, err
+
+		for cursor.Next(ctx) {
+			empEff := entity.EmployeeEfficiencyFetch{}
+			cursor.Decode(&empEff)
+			eff := entity.LabourEfficiency{}
+			eff.FirstName = user.FirstName
+			eff.LastName = user.LastName
+			lUtilization := (empEff.TotalHoursWorked / totalShiftHours) * 100
+			s1 := strconv.FormatFloat(lUtilization, 'f', 2, 64)
+			res, err := strconv.ParseFloat(s1, 64)
+			if err != nil {
+				fmt.Println(err)
+			}
+			eff.LaborUtilization = res
+			lProductivity := (empEff.TotalHoursSold / empEff.TotalHoursWorked) * 100
+			s2 := strconv.FormatFloat(lProductivity, 'f', 2, 64)
+			res2, err2 := strconv.ParseFloat(s2, 64)
+			if err2 != nil {
+				fmt.Println(err2)
+			}
+			eff.LaborProductivity = res2
+			eff.LaborEfficiency = eff.LaborUtilization * eff.LaborProductivity
+			labourEfficiency = append(labourEfficiency, &eff)
+
 		}
 
-		return job, nil
-	} else {
-		pipeLine := mongo.Pipeline{matchStage, lookupStage, unwindStage1, setStage, groupStage, projectStage}
-		cursor, err := db.Collection("Job").Aggregate(context.Background(), pipeLine)
-		if err != nil {
-			return nil, err
-		}
-		defer cursor.Close(ctx)
-		if err = cursor.All(context.Background(), &job); err != nil {
-			return nil, err
-		}
-
-		return job, nil
 	}
+	return labourEfficiency, nil
 }
