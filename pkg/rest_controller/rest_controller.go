@@ -78,7 +78,7 @@ func SecuredRoutes(g *echo.Group) {
 	g.POST("/v1/api/vehicle", vehicle.AddNewVehicle)
 	g.PUT("/v1/api/vehicle", vehicle.UpdateVehicle)
 	g.GET("/v1/api/vehicle", vehicle.GetVehiclesBtCustomer)
-	g.GET("/v1/api/customer", user.GetCustomerDetails)
+	g.GET("/v1/api/customer/details", user.GetCustomerDetails)
 
 	g.POST("/v1/api/pre_repair_estimate", pre_repair_estimate.AddNewPreRepairEstimate)
 	g.PUT("/v1/api/pre_repair_estimate", pre_repair_estimate.UpdatePreRepairEstimate)

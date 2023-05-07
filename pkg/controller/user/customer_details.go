@@ -115,18 +115,6 @@ func GetCustomerDetails(uid string) (*entity.CustomerDetails, error) {
 		rfm.R = 1
 	}
 
-	if durationSinceLastSale < time.Hour*24*7 {
-		rfm.R = 5
-	} else if durationSinceLastSale < time.Hour*24*30 {
-		rfm.R = 4
-	} else if durationSinceLastSale < time.Hour*24*90 {
-		rfm.R = 3
-	} else if durationSinceLastSale < time.Hour*24*180 {
-		rfm.R = 2
-	} else {
-		rfm.R = 1
-	}
-
 	if customerDetails.TotalJobs >= 100 {
 		rfm.F = 5
 	} else if customerDetails.TotalJobs >= 75 {
@@ -141,11 +129,11 @@ func GetCustomerDetails(uid string) (*entity.CustomerDetails, error) {
 
 	if customerDetails.TotalSpends >= 1000000.0 {
 		rfm.M = 5
-	} else if customerDetails.TotalJobs >= 500000.0 {
+	} else if customerDetails.TotalSpends >= 500000.0 {
 		rfm.M = 4
-	} else if customerDetails.TotalJobs >= 100000.0 {
+	} else if customerDetails.TotalSpends >= 100000.0 {
 		rfm.M = 3
-	} else if customerDetails.TotalJobs >= 50000.0 {
+	} else if customerDetails.TotalSpends >= 50000.0 {
 		rfm.M = 2
 	} else {
 		rfm.M = 1

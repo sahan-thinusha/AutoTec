@@ -20,8 +20,8 @@ func GetTechnicianEfficiency() ([]*entity.LabourEfficiency, error) {
 	now := time.Now()
 	_, month, _ := now.Date()
 	startOfMonth := time.Date(now.Year(), month, 1, 0, 0, 0, 0, time.Local)
-	hoursInMonth := now.Sub(startOfMonth).Hours()
-	totalShiftHours := hoursInMonth / 2
+	//hoursInMonth := now.Sub(startOfMonth).Hours()
+	totalShiftHours := 160.0 //hoursInMonth / 2
 	endOfMonth := time.Date(now.Year(), now.Month()+1, 0, 0, 0, 0, 0, time.UTC)
 
 	matchStageEmp := bson.D{{"$match", bson.D{{"role", "TECHNICIAN"}}}}
