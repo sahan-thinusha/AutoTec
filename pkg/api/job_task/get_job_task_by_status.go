@@ -29,3 +29,16 @@ func GetAllTasksByEmployeeAndStatus(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 
 }
+
+func GetAllJobTasksByJob(c echo.Context) error {
+
+	jobID := c.QueryParam("jobID")
+
+	data, err := controller.GetAllJobTasksByJob(jobID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, data)
+
+}

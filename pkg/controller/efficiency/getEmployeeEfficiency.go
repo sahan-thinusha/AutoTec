@@ -20,22 +20,28 @@ func GetTechnicianEfficiency() ([]*entity.LabourEfficiency, error) {
 	now := time.Now()
 	_, month, _ := now.Date()
 	startOfMonth := time.Date(now.Year(), month, 1, 0, 0, 0, 0, time.Local)
-	//hoursInMonth := now.Sub(startOfMonth).Hours()
-	totalShiftHours := 160.0 //hoursInMonth / 2
+	daysInMonth := now.Sub(startOfMonth).Hours() / 24.0
+	totalShiftHours := daysInMonth * 8
 	endOfMonth := time.Date(now.Year(), now.Month()+1, 0, 0, 0, 0, 0, time.UTC)
 
-	matchStageEmp := bson.D{{"$match", bson.D{{"role", "TECHNICIAN"}}}}
+	matchStageEmp := bson.D{{"$match", bson.D{{"role", "Technician"}}}}
 	pipeLine1 := mongo.Pipeline{matchStageEmp}
 
 	cursor1, err := db.Collection("Users").Aggregate(context.Background(), pipeLine1)
 	if err != nil {
+		fmt.Println(err)
+
 		return nil, err
 	}
 	defer cursor1.Close(ctx)
 
 	for cursor1.Next(ctx) {
 		user := entity.User{}
-		cursor1.Decode(&user)
+		err := cursor1.Decode(&user)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
 
 		matchStage := bson.D{{"$match", bson.D{{"status", env.Finished}}}}
 
@@ -55,12 +61,13 @@ func GetTechnicianEfficiency() ([]*entity.LabourEfficiency, error) {
 				}}}}},
 			},
 		}
-		lookupStage := bson.D{{"$lookup", bson.M{"$lookup": bson.M{
+		lookupStage := bson.D{{"$lookup", bson.M{
 			"from":     "JobTask",
 			"let":      bson.M{"jobId": "$_id", "labourID": user.Id},
 			"pipeline": inlinePipeJobTask,
 			"as":       "jobTask",
-		}}}}
+		}}}
+
 		unwindStage1 := bson.D{{"$unwind", bson.M{"path": "$jobTask", "preserveNullAndEmptyArrays": true}}}
 		setStage := bson.D{{
 			"$set", bson.M{
@@ -79,16 +86,22 @@ func GetTechnicianEfficiency() ([]*entity.LabourEfficiency, error) {
 		pipeLine := mongo.Pipeline{matchStage, matchStageDate, lookupStage, unwindStage1, setStage, groupStage}
 		cursor, err := db.Collection("Job").Aggregate(context.Background(), pipeLine)
 		if err != nil {
+			fmt.Println("s", err)
 			return nil, err
 		}
 		defer cursor.Close(ctx)
+		eff := entity.LabourEfficiency{}
+		eff.FirstName = user.FirstName
+		eff.LastName = user.LastName
+		eff.EmployeeId = user.Id
+
+		empEff := entity.EmployeeEfficiencyFetch{}
 
 		for cursor.Next(ctx) {
-			empEff := entity.EmployeeEfficiencyFetch{}
-			cursor.Decode(&empEff)
-			eff := entity.LabourEfficiency{}
-			eff.FirstName = user.FirstName
-			eff.LastName = user.LastName
+			err = cursor.Decode(&empEff)
+			if err != nil {
+				return nil, err
+			}
 			lUtilization := (empEff.TotalHoursWorked / totalShiftHours) * 100
 			s1 := strconv.FormatFloat(lUtilization, 'f', 2, 64)
 			res, err := strconv.ParseFloat(s1, 64)
@@ -104,9 +117,9 @@ func GetTechnicianEfficiency() ([]*entity.LabourEfficiency, error) {
 			}
 			eff.LaborProductivity = res2
 			eff.LaborEfficiency = eff.LaborUtilization * eff.LaborProductivity
-			labourEfficiency = append(labourEfficiency, &eff)
 
 		}
+		labourEfficiency = append(labourEfficiency, &eff)
 
 	}
 	return labourEfficiency, nil

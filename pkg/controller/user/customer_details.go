@@ -4,7 +4,9 @@ import (
 	"autotec/pkg/entity"
 	"autotec/pkg/env"
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
@@ -14,10 +16,11 @@ func GetCustomerDetails(uid string) (*entity.CustomerDetails, error) {
 	ctx := context.Background()
 	db := env.MongoDBConnection
 	fetchedUser := entity.User{}
-	coll := db.Collection("Users").FindOne(context.Background(), bson.M{"id": uid})
+	coll := db.Collection("Users").FindOne(context.Background(), bson.M{"_id": uid})
 	err := coll.Decode(&fetchedUser)
 	customerDetails.CustomerId = fetchedUser.Id
 	customerDetails.CustomerName = fetchedUser.FirstName + " " + fetchedUser.LastName
+	customerDetails.ContactNo = fetchedUser.ContactNo
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +29,7 @@ func GetCustomerDetails(uid string) (*entity.CustomerDetails, error) {
 	startOfYear := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, time.Local)
 	endOfYear := time.Date(now.Year(), 12, 31, 23, 59, 59, 999999999, time.Local)
 	matchStage := bson.D{{"$match", bson.M{"date": bson.M{"$gte": startOfYear, "$lte": endOfYear}, "customerId": uid}}}
-	groupStage := bson.D{{"$group", bson.M{"_id": bson.M{"year": bson.M{"$year": "$date"}}, "count": bson.M{"$sum": 1}, "last_job_date": bson.D{{"$max", "$date"}}}}}
+	groupStage := bson.D{{"$group", bson.M{"_id": bson.M{"year": bson.M{"$year": "$date"}}, "count": bson.M{"$sum": 1}}}}
 	pipeline := mongo.Pipeline{matchStage, groupStage}
 	cursor, err := db.Collection("Job").Aggregate(context.Background(), pipeline)
 	if err != nil {
@@ -36,14 +39,12 @@ func GetCustomerDetails(uid string) (*entity.CustomerDetails, error) {
 
 	if cursor.Next(ctx) {
 		var result struct {
-			Count       int64     `bson:"count"`
-			LastJobDate time.Time `bson:"last_job_date"`
+			Count int64 `bson:"count"`
 		}
 		if err := cursor.Decode(&result); err != nil {
 			return &customerDetails, err
 		}
 
-		customerDetails.LastSaleDate = result.LastJobDate
 		customerDetails.TotalJobs = result.Count
 
 	}
@@ -60,42 +61,44 @@ func GetCustomerDetails(uid string) (*entity.CustomerDetails, error) {
 		},
 	}}
 	groupStage1 := bson.D{{"$group", bson.D{
-		{"_id", nil},
+		{"_id", primitive.Null{}},
 		{"totalHoursSold", bson.M{"$sum": "$hoursSold"}},
+		{"last_job_date", bson.D{{"$max", "$date"}}},
 	}}}
+
 	pipeline1 := mongo.Pipeline{matchStage, matchStage1, lookupStage, unwindStage1, setStage, groupStage1}
 	cursor1, err := db.Collection("Job").Aggregate(context.Background(), pipeline1)
 	if err != nil {
 		return nil, err
 	}
+
 	defer cursor1.Close(ctx)
 
-	if err != nil {
-		return nil, err
-	}
-	defer cursor1.Close(ctx)
-
-	if cursor1.Next(ctx) {
-		data := entity.EmployeeEfficiencyFetch{}
-		cursor.Decode(&data)
-		customerDetails.TotalSpends = data.TotalHoursSold
-	}
-
+	LastSaleDate := time.Now().AddDate(-1, 0, 0)
 	if cursor1.Next(ctx) {
 		var result struct {
-			Count       int64     `bson:"count"`
-			LastJobDate time.Time `bson:"last_job_date"`
+			TotalHoursSold float64   `bson:"totalHoursSold"`
+			LastJobDate    time.Time `bson:"last_job_date"`
 		}
-		if err := cursor.Decode(&result); err != nil {
+		if err := cursor1.Decode(&result); err != nil {
 			return &customerDetails, err
 		}
 
-		customerDetails.LastSaleDate = result.LastJobDate
-		customerDetails.TotalJobs = result.Count
+		fmt.Println(result.LastJobDate)
+		fmt.Println(result.TotalHoursSold)
+
+		dateString := result.LastJobDate.Format("2006-01-02")
+		if dateString == "0000-00-00" || dateString == "0001-01-01" {
+			dateString = "-"
+		} else {
+			LastSaleDate = result.LastJobDate
+			customerDetails.LastSaleDate = dateString
+		}
+		customerDetails.TotalSpends = result.TotalHoursSold
 
 	}
 
-	durationSinceLastSale := time.Since(customerDetails.LastSaleDate)
+	durationSinceLastSale := time.Since(LastSaleDate)
 
 	type rfmst struct {
 		R int

@@ -103,6 +103,7 @@ func SecuredRoutes(g *echo.Group) {
 	g.POST("/v1/api/job_task", job_task.AddNewJobTask)
 	g.PUT("/v1/api/job_task", job_task.UpdateJobTask)
 	g.GET("/v1/api/job_task/employee", job_task.GetAllTasksByEmployeeAndStatus)
+	g.GET("/v1/api/job_task/job", job_task.GetAllJobTasksByJob)
 
 	g.GET("/v1/api/health_report/templates", health_report.GetAllHealthReportTemplate)
 
